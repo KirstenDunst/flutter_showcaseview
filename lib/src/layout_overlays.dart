@@ -58,53 +58,49 @@ class AnchoredOverlay extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return LayoutBuilder(
-      builder: (context, constraints) {
-        return OverlayBuilder(
-          showOverlay: showOverlay,
-          overlayBuilder: (overlayContext) {
-            // To calculate the "anchor" point we grab the render box of
-            // our parent Container and then we find the center of that box.
-            final box = context.findRenderObject() as RenderBox?;
+    return OverlayBuilder(
+      showOverlay: showOverlay,
+      overlayBuilder: (overlayContext) {
+        // To calculate the "anchor" point we grab the render box of
+        // our parent Container and then we find the center of that box.
+        final box = context.findRenderObject() as RenderBox?;
 
-            /// Handle null RenderBox safely.
-            final topLeft = box?.size.topLeft(
-                  box.localToGlobal(
-                    Offset.zero,
-                    ancestor: rootRenderObject,
-                  ),
-                ) ??
-                Offset.zero;
-            final bottomRight = box?.size.bottomRight(
-                  box.localToGlobal(
-                    Offset.zero,
-                    ancestor: rootRenderObject,
-                  ),
-                ) ??
-                Offset.zero;
+        /// Handle null RenderBox safely.
+        final topLeft = box?.size.topLeft(
+              box.localToGlobal(
+                Offset.zero,
+                ancestor: rootRenderObject,
+              ),
+            ) ??
+            Offset.zero;
+        final bottomRight = box?.size.bottomRight(
+              box.localToGlobal(
+                Offset.zero,
+                ancestor: rootRenderObject,
+              ),
+            ) ??
+            Offset.zero;
 
-            /// Provide a default anchorBounds if box is null.
-            final anchorBounds = (topLeft.dx.isNaN ||
-                    topLeft.dy.isNaN ||
-                    bottomRight.dx.isNaN ||
-                    bottomRight.dy.isNaN)
-                ? const Rect.fromLTRB(0.0, 0.0, 0.0, 0.0)
-                : Rect.fromLTRB(
-                    topLeft.dx,
-                    topLeft.dy,
-                    bottomRight.dx,
-                    bottomRight.dy,
-                  );
+        /// Provide a default anchorBounds if box is null.
+        final anchorBounds = (topLeft.dx.isNaN ||
+                topLeft.dy.isNaN ||
+                bottomRight.dx.isNaN ||
+                bottomRight.dy.isNaN)
+            ? const Rect.fromLTRB(0.0, 0.0, 0.0, 0.0)
+            : Rect.fromLTRB(
+                topLeft.dx,
+                topLeft.dy,
+                bottomRight.dx,
+                bottomRight.dy,
+              );
 
-            /// Calculate the anchor center or default to Offset.zero.
-            final anchorCenter = box?.size.center(topLeft) ?? Offset.zero;
+        /// Calculate the anchor center or default to Offset.zero.
+        final anchorCenter = box?.size.center(topLeft) ?? Offset.zero;
 
-            /// Pass the anchor details to the overlay builder.
-            return overlayBuilder!(overlayContext, anchorBounds, anchorCenter);
-          },
-          child: child,
-        );
+        /// Pass the anchor details to the overlay builder.
+        return overlayBuilder!(overlayContext, anchorBounds, anchorCenter);
       },
+      child: child,
     );
   }
 }
